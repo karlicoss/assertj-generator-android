@@ -16,8 +16,11 @@ ext.versions = [
 
         // test dependencies
         junit                : '4.12',
+        assertJ              : '2.4.1',
+
         googleCompileTesting : '0.9',
         googleTruth          : '0.28',
+
         commonsLang          : '3.4',
 
         // profiling dependencies
@@ -33,7 +36,10 @@ ext.libraries = [
 
         // test dependencies
         junit                : 'junit:junit:' + versions.junit,
+        assertJ              : 'org.assertj:assertj-core:' + versions.assertJ,
+
         googleCompileTesting : 'com.google.testing.compile:compile-testing:' + versions.googleCompileTesting,
         googleTruth          : 'com.google.truth:truth:' + versions.googleTruth,
+
         commonsLang          : 'org.apache.commons:commons-lang3:' + versions.commonsLang,
 ]
