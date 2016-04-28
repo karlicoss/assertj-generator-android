@@ -1,0 +1,1 @@
+Demo for [assertj generator](http://joel-costigliola.github.io/assertj/assertj-assertions-generator.html) support in Gradle Android plugin.
