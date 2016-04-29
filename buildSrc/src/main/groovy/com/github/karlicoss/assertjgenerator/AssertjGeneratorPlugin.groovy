@@ -67,7 +67,7 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
         def File destinationDir = new File(baseDestinationDir, variant.dirName)
 
         def Task assertjCleanTask = project.task(
-                "assertjCleanr${variant.name.capitalize()}",
+                "assertjClean${variant.name.capitalize()}",
                 type: Delete
         ).doFirst { Delete task ->
             task.delete(destinationDir)

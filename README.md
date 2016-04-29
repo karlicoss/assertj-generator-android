@@ -12,7 +12,7 @@ apply plugin: com.github.karlicoss.assertj-generator
 
 assertjGenerator {
     // Put the class names and package names for assertJ generator here
-    classesAndPackages = ['com.github.karlicoss.asssertjgenerator.demo.entities']
+    classesAndPackages = ['com.github.karlicoss.assertjgenerator.demo.entities']
     
     useInUnitTests = true
     

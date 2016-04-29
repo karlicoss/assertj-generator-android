@@ -1,4 +1,4 @@
-package com.github.karlicoss.asssertjgenerator.demo;
+package com.github.karlicoss.assertjgenerator.demo;
 
 import android.app.Activity;
 

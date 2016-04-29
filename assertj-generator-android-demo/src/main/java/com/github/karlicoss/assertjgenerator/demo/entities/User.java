@@ -1,4 +1,4 @@
-package com.github.karlicoss.asssertjgenerator.demo.entities;
+package com.github.karlicoss.assertjgenerator.demo.entities;
 
 import java.util.List;
 
