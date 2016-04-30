@@ -1,5 +1,8 @@
 package com.github.karlicoss.assertjgenerator.demo.entities;
 
+import android.os.Bundle;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
@@ -26,5 +29,14 @@ public class User {
 
     public List<String> getPermissions() {
         return permissions;
+    }
+
+    // only to ensure plugin classloads Android classes properly
+    public Bundle packInBundle() {
+        Bundle bundle = new Bundle(3);
+        bundle.putString("name", name);
+        bundle.putBoolean("premium", premium);
+        bundle.putStringArrayList("permissions", new ArrayList<>(permissions));
+        return bundle;
     }
 }

@@ -25,11 +25,13 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
         def BaseExtension android
         def Iterable<? extends BaseVariant> variants
         if (project.plugins.hasPlugin(AppPlugin)) {
-            android = project.extensions.getByType(AppExtension)
-            variants = android.getApplicationVariants()
+            def app = project.extensions.getByType(AppExtension)
+            android = app
+            variants = app.getApplicationVariants()
         } else if (project.plugins.hasPlugin(LibraryPlugin)) {
-            android = project.extensions.getByType(LibraryExtension)
-            variants = android.getLibraryVariants()
+            def lib = project.extensions.getByType(LibraryExtension)
+            android = lib
+            variants = lib.getLibraryVariants()
         } else {
             throw new GradleException('You must apply Android application plugin or Android library plugin first!')
         }
@@ -45,7 +47,7 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
 
         project.afterEvaluate {
             variants.all { BaseVariant variant ->
-                configureVariant(project, conf, variant)
+                configureVariant(project, android, conf, variant)
             }
         }
     }
@@ -56,7 +58,7 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
     */
 
     private
-    static configureVariant(Project project, Configuration configuration, BaseVariant variant) {
+    static configureVariant(Project project, BaseExtension android, Configuration configuration, BaseVariant variant) {
         def AssertjGeneratorExtension assertjGenerator = project.extensions.getByType(AssertjGeneratorExtension)
 
         def TestedVariant testedVariant = variant as TestedVariant // ugh no intersection types :(
