@@ -7,6 +7,7 @@ import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.internal.api.TestedVariant
+import com.android.build.gradle.internal.tasks.MockableAndroidJarTask
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -68,6 +69,8 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
         def File baseDestinationDir = project.file(new File(project.buildDir, "generated/source/assertj"))
         def File destinationDir = new File(baseDestinationDir, variant.dirName)
 
+        def MockableAndroidJarTask mockableAndroidJarTask = project.tasks.getByName('mockableAndroidJar') as MockableAndroidJarTask
+
         def Task assertjCleanTask = project.task(
                 "assertjClean${variant.name.capitalize()}",
                 type: Delete
@@ -78,13 +81,15 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
         def Task assertjGeneratorTask = project.task(
                 "assertjGenerator${variant.name.capitalize()}",
                 type: JavaExec,
-                dependsOn: [javaCompileTask, assertjCleanTask]
+                dependsOn: [javaCompileTask, assertjCleanTask, mockableAndroidJarTask]
         ).doFirst { JavaExec self ->
             destinationDir.mkdirs()
 
-            // TODO is this the proper way to provide source files for this task?
-            // TODO Is there a way not to hardcode android.jar dependency???
-            self.setClasspath(project.files(configuration, javaCompileTask.destinationDir, new File(project.rootDir, 'build/generated/mockable-android-23.jar')))
+            /*
+                TODO I have to add android.jar to classpath so assertj generator could classload and discover assertion targets
+                is this really a proper way of providing this dependency?
+             */
+            self.setClasspath(project.files(configuration, javaCompileTask.outputs, mockableAndroidJarTask.outputs))
             self.setWorkingDir(destinationDir)
             self.setMain('org.assertj.assertions.generator.cli.AssertionGeneratorLauncher')
             self.setArgs(assertjGenerator.classesAndPackages) // TODO check for empty classes/package names
