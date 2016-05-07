@@ -8,6 +8,8 @@ import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.internal.api.TestedVariant
 import com.android.build.gradle.internal.tasks.MockableAndroidJarTask
+import com.android.builder.model.AndroidProject
+import com.google.common.base.Joiner
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -23,15 +25,12 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        def BaseExtension android
         def Iterable<? extends BaseVariant> variants
         if (project.plugins.hasPlugin(AppPlugin)) {
             def app = project.extensions.getByType(AppExtension)
-            android = app
             variants = app.getApplicationVariants()
         } else if (project.plugins.hasPlugin(LibraryPlugin)) {
             def lib = project.extensions.getByType(LibraryExtension)
-            android = lib
             variants = lib.getLibraryVariants()
         } else {
             throw new GradleException('You must apply Android application plugin or Android library plugin first!')
@@ -48,7 +47,7 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
 
         project.afterEvaluate {
             variants.all { BaseVariant variant ->
-                configureVariant(project, android, conf, variant)
+                configureVariant(project, conf, variant)
             }
         }
     }
@@ -57,16 +56,13 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
         TODO how to handle inputs and outputs properly?
         In order to do that I have to declare package/class files inputs somehow, it that possible with Gradle Android plugin?
     */
-
-    private
-    static configureVariant(Project project, BaseExtension android, Configuration configuration, BaseVariant variant) {
+    private static configureVariant(Project project, Configuration configuration, BaseVariant variant) {
         def AssertjGeneratorExtension assertjGenerator = project.extensions.getByType(AssertjGeneratorExtension)
 
         def TestedVariant testedVariant = variant as TestedVariant // ugh no intersection types :(
         def JavaCompile javaCompileTask = variant.javaCompile
 
-        // TODO is there a way not to hardcore 'generated' directory?
-        def File baseDestinationDir = project.file(new File(project.buildDir, "generated/source/assertj"))
+        def File baseDestinationDir = project.file(Joiner.on(File.separatorChar).join(project.buildDir, AndroidProject.FD_GENERATED, "source", "assertj"))
         def File destinationDir = new File(baseDestinationDir, variant.dirName)
 
         def MockableAndroidJarTask mockableAndroidJarTask = project.tasks.getByName('mockableAndroidJar') as MockableAndroidJarTask
@@ -86,8 +82,8 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
             destinationDir.mkdirs()
 
             /*
-                TODO I have to add android.jar to classpath so assertj generator could classload and discover assertion targets
-                is this really a proper way of providing this dependency?
+                I have to add android.jar to classpath so assertj generator could classload and discover assertion targets
+                is this actually the proper way of providing this dependency?
              */
             self.setClasspath(project.files(configuration, javaCompileTask.outputs, mockableAndroidJarTask.outputs))
             self.setWorkingDir(destinationDir)
@@ -96,8 +92,12 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
         }
 
         def configureTestVariant = { BaseVariant bv ->
+            /*
+                I wish I could just use bv.registerJavaGeneratingTask(assertjGeneratorTask, destinationDir)
+                However, it results in NullPointerException. For some reason, bv.variantData.sourceGenTask is null.
+             */
             bv.addJavaSourceFoldersToModel(destinationDir)
-            bv.javaCompile.source(destinationDir)// TODO WTF? Isn't adding to model enough???
+            bv.javaCompile.source(destinationDir)
             bv.javaCompile.dependsOn(assertjGeneratorTask)
         }
 
