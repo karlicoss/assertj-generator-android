@@ -29,7 +29,9 @@ apply plugin: AssertjGeneratorPlugin
     Put the class names and package names for assertJ generator here
  */
 assertjGenerator {
-    classesAndPackages = ['com.github.karlicoss.assertjgenerator.demo.entities']
+    classesAndPackages = [
+            'com.github.karlicoss.assertjgenerator.demo.entities',
+    ]
     useInUnitTests = true
     useInAndroidTests = false
 }
