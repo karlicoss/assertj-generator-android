@@ -1,9 +1,15 @@
 language: android
 
-notifications:
-  email: false
 
 sudo: false
+
+
+notifications:
+  email:
+    recipients:
+      - karlicoss@gmail.com
+    on_success: never
+    on_failure: always
 
 
 jdk:
@@ -27,7 +33,7 @@ android:
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 
-cache:
+cache: # TODO maven cache?
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
