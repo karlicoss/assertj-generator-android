@@ -21,25 +21,25 @@ dependencies {
 
 
 
-import com.github.karlicoss.assertjgenerator.AssertjGeneratorPlugin
-apply plugin: AssertjGeneratorPlugin
-
-
-/*
-    Put the class names and package names for assertJ generator here
- */
-assertjGenerator {
-    classesAndPackages = [
-            'com.github.karlicoss.assertjgenerator.demo.entities',
-    ]
-    useInUnitTests = true
-    useInAndroidTests = false
-}
-
-/*
-    Update generator version if necessary
- */
-dependencies {
-    assertjGenerator libraries.assertJ
-    assertjGenerator 'org.assertj:assertj-assertions-generator:2.0.0'
-}
+//import com.github.karlicoss.assertjgenerator.AssertjGeneratorPlugin
+//apply plugin: AssertjGeneratorPlugin
+//
+//
+///*
+//    Put the class names and package names for assertJ generator here
+// */
+//assertjGenerator {
+//    classesAndPackages = [
+//            'com.github.karlicoss.assertjgenerator.demo.entities',
+//    ]
+//    useInUnitTests = true
+//    useInAndroidTests = false
+//}
+//
+///*
+//    Update generator version if necessary
+// */
+//dependencies {
+//    assertjGenerator libraries.assertJ
+//    assertjGenerator 'org.assertj:assertj-assertions-generator:2.0.0'
+//}

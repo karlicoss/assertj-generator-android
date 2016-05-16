@@ -31,6 +31,7 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
         def Iterable<? extends BaseVariant> variants
         if (project.plugins.hasPlugin(AppPlugin)) {
             def app = project.extensions.getByType(AppExtension)
+            println "MAIN2: " + (app.sourceSets.getByName("main").java.sourceDirectoryTrees as List)
             variants = app.getApplicationVariants()
         } else if (project.plugins.hasPlugin(LibraryPlugin)) {
             def lib = project.extensions.getByType(LibraryExtension)
@@ -55,10 +56,12 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
     }
 
     private static configureVariant(Project project, Configuration configuration, BaseVariant variant) {
+        println "CONFIGURING " + variant.name
         def AssertjGeneratorExtension assertjGenerator = project.extensions.getByType(AssertjGeneratorExtension)
 
         def TestedVariant testedVariant = variant as TestedVariant // ugh no intersection types :(
         def JavaCompile javaCompileTask = variant.javaCompile
+        println "JAVACOMPILE!: " + javaCompileTask.name
 
         def File baseDestinationDir = project.file(Joiner.on(File.separatorChar).join(project.buildDir, AndroidProject.FD_GENERATED, "source", "assertj"))
         def File destinationDir = new File(baseDestinationDir, variant.dirName)
@@ -77,13 +80,17 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
                 I have to add android.jar to classpath so assertj generator could classload and discover assertion targets
                 is this actually the proper way of providing this dependency?
              */
+            javaCompileTask.execute()
+            println("OUTPUTS: " + (javaCompileTask.outputs.files.asFileTree.files as List))
             self.setClasspath(project.files(configuration, javaCompileTask.outputs, mockableAndroidJarTask.outputs))
             self.setWorkingDir(destinationDir)
+            println("RUNNING GENERATOR!!! for " + assertjGenerator.classesAndPackages)
             self.setMain('org.assertj.assertions.generator.cli.AssertionGeneratorLauncher')
             self.setArgs(assertjGenerator.classesAndPackages) // TODO check for empty classes/package names
         }
         assertjGeneratorTask.setGroup("AssertJ generator")
         assertjGeneratorTask.setDescription("Generate assertions for ${variant.name} classes")
+        println "INPUTS!!!!!: " + (javaCompileTask.inputs.files as List)
         assertjGeneratorTask.inputs.files(getGeneratorInputs(javaCompileTask, assertjGenerator))
         assertjGeneratorTask.outputs.dir(destinationDir)
 
