@@ -22,6 +22,10 @@ import org.gradle.api.tasks.compile.JavaCompile
 @TypeChecked
 public class AssertjGeneratorPlugin implements Plugin<Project> {
 
+    private static final String EXTENSION_NAME = 'assertjGenerator'
+
+    private static final String CONFIGURATION_NAME = 'assertjGenerator'
+
     @Override
     void apply(Project project) {
         def Iterable<? extends BaseVariant> variants
@@ -35,11 +39,10 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
             throw new GradleException('You must apply Android application plugin or Android library plugin first!')
         }
 
-        def String extensionName = 'assertjGenerator'
-        project.extensions.create(extensionName, AssertjGeneratorExtension)
 
-        def String configurationName = 'assertjGenerator'
-        def Configuration conf = project.configurations.create(configurationName).extendsFrom(
+        project.extensions.create(EXTENSION_NAME, AssertjGeneratorExtension)
+
+        def Configuration conf = project.configurations.create(CONFIGURATION_NAME).extendsFrom(
                 project.configurations.getByName('compile'),
                 project.configurations.getByName('provided')
         )
@@ -113,13 +116,17 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
 
         A more appropriate way of doing this is probably:
           1) Checking file name against the pattern. If it passes the check, include the file.
-          2) If if didn't pass the check, parse it, extract all the classes defined in it and check against the patterns
+          2) If if didn't pass the check, parse it, extract all the classes defined in it and check against the patterns.
 
         However, I'm not sure if it is a big issue anyway, and I couldn't find any simple Java parser, so if you have any ideas on the proper way of
-        fixing this, please tell!
+        fixing this, please tell! Right now I just give an ability to force assertions generation via the forceRun parameter.
     */
     private static FileCollection getGeneratorInputs(JavaCompile javaCompile, AssertjGeneratorExtension extension) {
-        def trackedPathes = extension.classesAndPackages.collect { String name -> name.replace('.' as char, File.separatorChar)}
-        return javaCompile.inputs.files.filter { File file ->  trackedPathes.any {tracked -> file.path.contains(tracked)}}
+        if (extension.forceRun) {
+            return javaCompile.inputs.files
+        } else {
+            def trackedPathes = extension.classesAndPackages.collect { String name -> name.replace('.' as char, File.separatorChar)}
+            return javaCompile.inputs.files.filter { File file ->  trackedPathes.any {tracked -> file.path.contains(tracked)}}
+        }
     }
 }
