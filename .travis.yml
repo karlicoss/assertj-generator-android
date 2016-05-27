@@ -37,7 +37,10 @@ cache: # TODO maven cache?
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+    - $HOME/.gradle/native/
+    - $HOME/.gradle/daemon/native/
 
 
 script:
+  - ./gradlew --configure-on-demand assertj-generator-android-gradle-plugin:install # configure on demand to prevent artifact resolving problems
   - ./gradlew check
