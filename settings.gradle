@@ -1,1 +1,4 @@
-include ':assertj-generator-android-demo'
+rootProject.name = 'assertj-generator-android'
+
+include 'assertj-generator-android-gradle-plugin'
+include 'assertj-generator-android-demo'

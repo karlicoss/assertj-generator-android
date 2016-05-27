@@ -1,9 +1,9 @@
 [![Build Status](https://travis-ci.org/karlicoss/assertj-generator-android.svg?branch=master)](https://travis-ci.org/karlicoss/assertj-generator-android-demo)
 
-Demo for [assertj generator](http://joel-costigliola.github.io/assertj/assertj-assertions-generator.html) support in Gradle Android plugin.
+This plugin uses [AssertJ generator](http://joel-costigliola.github.io/assertj/assertj-assertions-generator.html) to generate assertions specific to
+your classes. No need to run it manually and commit assertions boilerplate in your repository!
 
-This plugin enables seamless interaction of assertions generator with your project. No need to run it manually
-and commit assertions boilerplate in your repository!
+For examples of generated assertions boilerplate, see the [generator page](http://joel-costigliola.github.io/assertj/assertj-assertions-generator.html).
 
 # Configuring
 
