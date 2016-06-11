@@ -1,6 +1,7 @@
 package com.github.karlicoss.assertjgenerator.demo.entities;
 
 import android.os.Bundle;
+import android.support.v4.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,9 @@ public class User {
     private final boolean premium;
 
     private final List<String> permissions;
+
+    // just to ensure we touch aar dependencies in classpath
+    private final Pair<String, String> meh = new Pair<>("aba", "cabadabacaba");
 
     public User(String name, boolean premium, List<String> permissions) {
         this.name = name;
