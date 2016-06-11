@@ -60,11 +60,16 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
         def TestedVariant testedVariant = variant as TestedVariant // ugh no intersection types :(
         def JavaCompile javaCompileTask = variant.javaCompile
 
-        def File baseDestinationDir = project.file(Joiner.on(File.separatorChar).join(project.buildDir, AndroidProject.FD_GENERATED, "source", "assertj"))
+        def File baseDestinationDir = project.file(Joiner.on(File.separator).join(project.buildDir, AndroidProject.FD_GENERATED, "source", "assertj"))
         def File destinationDir = new File(baseDestinationDir, variant.dirName)
 
         def MockableAndroidJarTask mockableAndroidJarTask = project.tasks.getByName('mockableAndroidJar') as MockableAndroidJarTask
 
+        // we've got to collect jars in aar packages since assertj generator is plain java program
+        def explodedAars = project.fileTree(
+                dir: Joiner.on(File.separator).join(project.buildDir, "intermediates", "exploded-aar"),
+                include: '**/*.jar'
+        )
 
         def Task assertjGeneratorTask = project.task(
                 "assertjGenerator${variant.name.capitalize()}",
@@ -77,7 +82,12 @@ public class AssertjGeneratorPlugin implements Plugin<Project> {
                 I have to add android.jar to classpath so assertj generator could classload and discover assertion targets
                 is this actually the proper way of providing this dependency?
              */
-            self.setClasspath(project.files(configuration, javaCompileTask.outputs, mockableAndroidJarTask.outputs))
+            self.setClasspath(project.files(
+                    configuration,
+                    javaCompileTask.outputs,
+                    mockableAndroidJarTask.outputs,
+                    explodedAars,
+            ))
             self.setWorkingDir(destinationDir)
             self.setMain('org.assertj.assertions.generator.cli.AssertionGeneratorLauncher')
             self.setArgs(assertjGenerator.classesAndPackages) // TODO check for empty classes/package names
