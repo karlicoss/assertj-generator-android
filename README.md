@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/karlicoss/assertj-generator-android.svg?branch=master)](https://travis-ci.org/karlicoss/assertj-generator-android-demo)
+[![Build Status](https://travis-ci.org/karlicoss/assertj-generator-android.svg?branch=master)](https://travis-ci.org/karlicoss/assertj-generator-android)
 
 This plugin uses [AssertJ generator](http://joel-costigliola.github.io/assertj/assertj-assertions-generator.html) to generate assertions specific to
 your classes. No need to run it manually and commit assertions boilerplate in your repository!
